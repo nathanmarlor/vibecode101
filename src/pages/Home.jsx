@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
-import { courses, testimonials, stats, faq } from '../data';
+import { useState, useEffect } from 'react';
+import { courses, testimonials, faq } from '../data';
 
 const Home = () => {
   return (
@@ -103,15 +103,39 @@ const Hero = () => {
 
 // ==================== STATS ====================
 const StatsSection = () => {
+  const [fetched, setFetched] = useState(null);
+
+  useEffect(() => {
+    fetch('https://api.vibecode101.dev/stats')
+      .then(r => r.json())
+      .then(setFetched)
+      .catch(() => {
+        // Fallback to hardcoded data — API isn't built yet
+        setFetched({
+          users: '~2.8K',
+          courses: '12+',
+          uptime: '99.8%',
+          vibeScore: '8.7/10',
+        });
+      });
+  }, []);
+
+  const finalStats = fetched || {
+    users: '~2.8K',
+    courses: '12+',
+    uptime: '99.8%',
+    vibeScore: '8.7/10',
+  };
+
   return (
     <section className="stats-section">
       <div className="container">
         <div className="stats-grid">
           {[
-            { value: stats.students, label: 'Active Students' },
-            { value: stats.courses, label: 'Courses Available' },
-            { value: stats.uptime, label: 'Platform Uptime' },
-            { value: '4.7', label: 'Average Rating' },
+            { value: finalStats.users, label: 'Active Users' },
+            { value: finalStats.courses, label: 'Courses' },
+            { value: finalStats.uptime, label: 'Uptime' },
+            { value: finalStats.vibeScore, label: 'Vibe Score' },
           ].map((item, i) => (
             <div className="stat-item" key={i} style={{ textAlign: 'center' }}>
               <h3 style={{ fontWeight: 800 }}>{item.value}</h3>
@@ -163,9 +187,9 @@ const TestimonialsSection = () => {
         <div className="section-header">
           <h2>What people say</h2>
         </div>
-        <div className="testimonials-grid" style={{ gap: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
+        <div className="testimonials-grid" style={{ gap: 24 }}>
           {testimonials.map((t, i) => (
-            <div className="testimonial-card" key={i} style={i === 2 ? { transform: 'rotate(-2deg)', background: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: 10, padding: 22, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } : {}}>
+            <div className="testimonial-card" key={i}>
               <p style={{ fontSize: '0.88rem', lineHeight: 1.6, color: 'var(--color-text-secondary)', marginBottom: 16 }}>
                 "{t.text}"
               </p>
@@ -265,6 +289,7 @@ const NewsletterSection = () => {
           )}
           <form onSubmit={handleSubmit} className="newsletter-form" style={{ maxWidth: '420px', margin: '0 auto' }}>
             <input
+              type="text"
               placeholder="you@example.com"
               style={{ flex: 1, padding: '10px 14px', border: '2px solid rgba(255,255,255,0.2)', borderRadius: '6px', fontSize: '0.88rem', background: 'rgba(255,255,255,0.1)', color: 'white', fontFamily: 'system-ui, sans-serif', outline: 'none' }}
             />

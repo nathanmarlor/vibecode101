@@ -33,15 +33,9 @@ const ContactSection = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Developer forgot to wire up the backend — just logs to console
-    console.log('Contact form submitted:', {
-      name: formData.name,
-      email: formData.email,
-      subject: formData.subject,
-      message: formData.message
-    });
+  const handleSubmit = () => {
+    // Form doesn't actually submit — just console.log for debugging (backend not linked)
+    console.log('Contact form submitted:', { ...formData });
     setStatus('sent');
   };
 
