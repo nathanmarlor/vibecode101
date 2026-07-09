@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { courses, testimonials, faq } from '../data';
+import { courses, testimonials, stats, faq } from '../data';
 
 const Home = () => {
   return (
