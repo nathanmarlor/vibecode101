@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { createContext, useContext, useState, useEffect } from 'react';
 import Home from './pages/Home';
 import Pricing from './pages/Pricing';
@@ -433,11 +433,11 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <AuthProvider>
         <AppContent />
       </AuthProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 
