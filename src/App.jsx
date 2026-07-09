@@ -136,7 +136,7 @@ const Footer = () => {
         <div className="footer-bottom">
           <span>© 2025 VibeCode101. All rights reserved.</span>
           <span>
-            <a href="#">Privacy Policy</a> · <a href="#">Terms of Service</a>
+            <a href={import.meta.env.DEV ? 'http://example.com' : '/privacy-policy'}>Privacy Policy</a> · <a href="#">Terms of Service</a>
           </span>
         </div>
       </div>
@@ -169,14 +169,174 @@ const AuthPage = ({ isSignup }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [verifyCode, setVerifyCode] = useState('');
+  
+  // 'step' tracks multi-step signup: 'email' -> 'verify' -> 'password'
+  // Login stays on 'password' step (just email + password)
+  const [step, setStep] = useState(isSignup ? 'email' : 'password');
   const [method, setMethod] = useState('email');
 
-  const handleSubmit = async (e) => {
+  const generateCode = () => {
+    const num = Math.floor(100000 + Math.random() * 900000);
+    return num.toString();
+  };
+
+  // For the demo, always show a fixed verification code
+  const [verificationCode] = useState(generateCode());
+
+  // Forgot password — just sends you to a page that opens a blank tab
+  // because the developer didn't wire up a backend
+  const handleForgotPassword = () => {
+    window.open('https://accounts.google.com', '_blank');
+  };
+
+  const handleSubmitEmail = (e) => {
     e.preventDefault();
-    // No validation — just take whatever they type and log them in
+    if (isSignup) {
+      setStep('verify');
+    } else {
+      // Login — just navigate directly
+      login(email);
+      navigate('/dashboard');
+    }
+  };
+
+  const handleSubmitVerify = (e) => {
+    e.preventDefault();
+    // Always succeeds — no backend to check against
+    if (isSignup) {
+      setStep('password');
+    } else {
+      login(email);
+      navigate('/dashboard');
+    }
+  };
+
+  const handleSubmitPassword = (e) => {
+    e.preventDefault();
+    // Accepts any password — no validation
     login(email);
     navigate('/dashboard');
   };
+
+  const renderEmailStep = (isSignup) => (
+    <form onSubmit={handleSubmitEmail}>
+      <div style={{ marginBottom: 14 }}>
+        <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: 5 }}>Email address</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+          required
+          style={{
+            width: '100%',
+            padding: '10px 14px',
+            border: '1px solid var(--color-border)',
+            borderRadius: '6px',
+            fontSize: '0.88rem',
+            fontFamily: 'system-ui, sans-serif',
+            background: 'var(--color-bg)',
+            outline: 'none',
+            boxSizing: 'border-box'
+          }}
+        />
+      </div>
+      <button className="btn btn-primary" type="submit" style={{ width: '100%', padding: '12px 20px', fontSize: '0.9rem' }}>
+        {isSignup ? 'Continue' : 'Log in'}
+      </button>
+    </form>
+  );
+
+  const renderVerifyStep = () => (
+    <form onSubmit={handleSubmitVerify}>
+      <p style={{ fontSize: '0.88rem', color: 'var(--color-text-secondary)', marginBottom: 14, lineHeight: 1.5 }}>
+        We sent a verification code to <strong>{email}</strong>. Please enter the code below.
+      </p>
+      <p style={{ fontSize: '0.82rem', color: 'var(--color-text-secondary)', marginBottom: 14, padding: '8px 12px', background: 'var(--color-bg-secondary)', borderRadius: '6px' }}>
+        Verification code: <strong>{verificationCode}</strong> (check your inbox)
+      </p>
+      <div style={{ marginBottom: 14 }}>
+        <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: 5 }}>6-digit code</label>
+        <input
+          type="text"
+          maxLength={6}
+          value={verifyCode}
+          onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, ''))}
+          placeholder="123456"
+          required
+          style={{
+            width: '100%',
+            padding: '10px 14px',
+            border: '1px solid var(--color-border)',
+            borderRadius: '6px',
+            fontSize: '1.1rem',
+            fontFamily: 'monospace',
+            letterSpacing: '0.5em',
+            textAlign: 'center',
+            background: 'var(--color-bg)',
+            outline: 'none',
+            boxSizing: 'border-box'
+          }}
+        />
+      </div>
+      <button className="btn btn-primary" type="submit" style={{ width: '100%', padding: '12px 20px', fontSize: '0.9rem' }}>
+        Verify
+      </button>
+    </form>
+  );
+
+  const renderPasswordStep = (isSignup) => (
+    <form onSubmit={handleSubmitPassword}>
+      {isSignup && (
+        <div style={{ marginBottom: 14 }}>
+          <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: 5 }}>Choose a password</label>
+          <input
+            type="text"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            required
+            style={{
+              width: '100%',
+              padding: '10px 14px',
+              border: '1px solid var(--color-border)',
+              borderRadius: '6px',
+              fontSize: '0.88rem',
+              fontFamily: 'system-ui, sans-serif',
+              background: 'var(--color-bg)',
+              outline: 'none',
+              boxSizing: 'border-box'
+            }}
+          />
+          <p style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', marginBottom: 14 }}>
+            We recommend using a strong password with at least 8 characters.
+          </p>
+        </div>
+      )}
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 18 }}>
+        <input
+          type="checkbox"
+          id="remember"
+          style={{ accentColor: 'var(--color-primary)' }}
+        />
+        <label htmlFor="remember" style={{ fontSize: '0.82rem' }}>Remember me on this device</label>
+      </div>
+
+      <button className="btn btn-primary" type="submit" style={{ width: '100%', padding: '12px 20px', fontSize: '0.9rem', marginBottom: 12 }}>
+        {isSignup ? 'Create account' : 'Log in'}
+      </button>
+
+      {!isSignup && (
+        <div style={{ textAlign: 'center', fontSize: '0.82rem' }}>
+          <a href="#" onClick={(e) => e.preventDefault()} style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>
+            Forgot password?
+          </a>
+        </div>
+      )}
+    </form>
+  );
 
   return (
     <div style={{ padding: '60px 0', background: 'var(--color-bg-secondary)', minHeight: '60vh' }}>
@@ -209,61 +369,11 @@ const AuthPage = ({ isSignup }) => {
           </div>
 
           {method === 'email' && (
-            <form onSubmit={handleSubmit}>
-              <div style={{ marginBottom: 14 }}>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: 5 }}>Email address</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  required
-                  id="email"
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: '6px',
-                    fontSize: '0.88rem',
-                    fontFamily: 'system-ui, sans-serif',
-                    background: 'var(--color-bg)',
-                    outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                />
-              </div>
-
-              <div style={{ marginBottom: 20 }}>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: 5 }}>Password</label>
-                <input
-                  type="text"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  id="password"
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: '6px',
-                    fontSize: '0.88rem',
-                    fontFamily: 'system-ui, sans-serif',
-                    background: 'var(--color-bg)',
-                    outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                />
-              </div>
-
-              <button
-                className="btn btn-primary"
-                type="submit"
-                style={{ width: '100%', padding: '12px 20px', fontSize: '0.9rem' }}
-              >
-                {isSignup ? 'Create account' : 'Log in'}
-              </button>
-            </form>
+            <>
+              {step === 'email' && renderEmailStep(isSignup)}
+              {step === 'verify' && renderVerifyStep()}
+              {step === 'password' && renderPasswordStep(isSignup)}
+            </>
           )}
 
           {method === 'google' && (

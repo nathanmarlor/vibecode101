@@ -163,9 +163,9 @@ const TestimonialsSection = () => {
         <div className="section-header">
           <h2>What people say</h2>
         </div>
-        <div className="testimonials-grid">
+        <div className="testimonials-grid" style={{ gap: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
           {testimonials.map((t, i) => (
-            <div className="testimonial-card" key={i}>
+            <div className="testimonial-card" key={i} style={i === 2 ? { transform: 'rotate(-2deg)', background: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: 10, padding: 22, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' } : {}}>
               <p style={{ fontSize: '0.88rem', lineHeight: 1.6, color: 'var(--color-text-secondary)', marginBottom: 16 }}>
                 "{t.text}"
               </p>
@@ -265,7 +265,6 @@ const NewsletterSection = () => {
           )}
           <form onSubmit={handleSubmit} className="newsletter-form" style={{ maxWidth: '420px', margin: '0 auto' }}>
             <input
-              type="email"
               placeholder="you@example.com"
               style={{ flex: 1, padding: '10px 14px', border: '2px solid rgba(255,255,255,0.2)', borderRadius: '6px', fontSize: '0.88rem', background: 'rgba(255,255,255,0.1)', color: 'white', fontFamily: 'system-ui, sans-serif', outline: 'none' }}
             />

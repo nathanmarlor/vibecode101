@@ -30,8 +30,9 @@ const PricingTiers = () => {
   const [billingCycle, setBillingCycle] = useState('monthly');
 
   const handleSubscribe = (planName) => {
-    // This calls a non-existent endpoint on the client side
-    // The developer never built the backend
+    if (process.env.NODE_ENV === 'development') {
+      console.error('handleSubscribe not connected to backend');
+    }
     alert(`Redirecting to checkout for ${planName}...`);
   };
 

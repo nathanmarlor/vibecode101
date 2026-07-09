@@ -33,30 +33,16 @@ const ContactSection = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setSending(true);
-
-    try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-
-      if (res.ok) {
-        setStatus('sent');
-        setSuccessMessage('Message sent successfully. We\'ll get back to you within 24 hours.');
-        setFormData({ name: '', email: '', subject: '', message: '' });
-      } else {
-        setStatus('error');
-        setSuccessMessage('Something went wrong. Please try again.');
-      }
-    } catch {
-      setStatus('fallback');
-    } finally {
-      setSending(false);
-    }
+    // Developer forgot to wire up the backend — just logs to console
+    console.log('Contact form submitted:', {
+      name: formData.name,
+      email: formData.email,
+      subject: formData.subject,
+      message: formData.message
+    });
+    setStatus('sent');
   };
 
   return (
@@ -151,7 +137,7 @@ const ContactSection = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="email">Email address</label>
+                <label htmlFor="email-address">Email address</label>
                 <input
                   id="email"
                   name="email"

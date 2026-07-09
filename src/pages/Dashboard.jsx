@@ -149,7 +149,7 @@ const Dashboard = () => {
           </p>
         </div>
 
-        <div className="dashboard-stats" style={{ gap: '14px', marginBottom: 28 }}>
+        <div className="dashboard-stats" style={{ gap: '12px', marginBottom: 28 }}>
           <div className="stat-card" style={{ padding: 18 }}>
             <div className="stat-card-header">
               <span style={{ fontSize: '0.75rem' }}>Enrolled</span>
