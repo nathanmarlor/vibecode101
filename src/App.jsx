@@ -171,28 +171,11 @@ const AuthPage = ({ isSignup }) => {
   const [password, setPassword] = useState('');
   const [method, setMethod] = useState('email');
 
-  useEffect(() => {
-    setPassword('');
-  }, [email]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch('/api/auth/' + (isSignup ? 'register' : 'login'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      if (response.ok) {
-        const data = await response.json();
-        login(data.user.email);
-        navigate('/dashboard');
-      } else {
-        alert('Something went wrong. Try again.');
-      }
-    } catch (err) {
-      alert('Could not connect to server. Please try again.');
-    }
+    // No validation — just take whatever they type and log them in
+    login(email);
+    navigate('/dashboard');
   };
 
   return (
@@ -273,27 +256,13 @@ const AuthPage = ({ isSignup }) => {
                 />
               </div>
 
-              {isSignup && (
-                <div style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)', marginBottom: 20 }}>
-                  Password must be at least 8 characters.
-                </div>
-              )}
-
-              {/* BUG: no type="submit" — button is just a reset button */}
               <button
                 className="btn btn-primary"
-                onClick={handleSubmit}
-                style={{ width: '100%', padding: '12px 20px', fontSize: '0.9rem', marginBottom: 14 }}
+                type="submit"
+                style={{ width: '100%', padding: '12px 20px', fontSize: '0.9rem' }}
               >
                 {isSignup ? 'Create account' : 'Log in'}
               </button>
-
-              {/* BUG: anchor link just reloads page */}
-              <div style={{ textAlign: 'center' }}>
-                <a href="#" onClick={(e) => e.preventDefault()} style={{ fontSize: '0.82rem', color: 'var(--color-primary)', textDecoration: 'none' }}>
-                  Forgot password?
-                </a>
-              </div>
             </form>
           )}
 
